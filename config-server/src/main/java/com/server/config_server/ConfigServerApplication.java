@@ -10,16 +10,6 @@ import org.springframework.cloud.config.server.EnableConfigServer;
 public class ConfigServerApplication {
 
 	public static void main(String[] args) {
-		Dotenv dotenv = Dotenv.configure()
-				.filename(".env")
-				.ignoreIfMissing()  // don't crash if .env is missing
-				.load();
-
-		dotenv.entries().forEach(entry ->
-				System.setProperty(entry.getKey(), entry.getValue())
-		);
-
-
 		SpringApplication.run(ConfigServerApplication.class, args);
 	}
 

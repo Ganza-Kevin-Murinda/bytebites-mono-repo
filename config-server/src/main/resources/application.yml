@@ -1,9 +1,36 @@
-spring.application.name=config-server
-server.port=8888
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: ${GITHUB_URI}
+          clone-on-start: true
+          username: Ganza-Kevin-Murinda
+          password: ${GITHUB-TOKEN}
+server:
+  port: 8888
 
-#External centralization(GITHUB)
-spring.cloud.config.server.git.uri =${GITHUB_URI}
-spring.cloud.config.server.git.clone-on-start= true
-spring.cloud.config.server.git.username=Ganza-Kevin-Murinda
-spring.cloud.config.server.git.password=${GITHUB-TOKEN}
+# Eureka Client Configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+# Actuator for monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,refresh,configprops
+  endpoint:
+    health:
+      show-details: always
+
+# Logging
+logging:
+  level:
+    org.springframework.cloud.config: DEBUG
+    org.springframework.web: DEBUG
 
