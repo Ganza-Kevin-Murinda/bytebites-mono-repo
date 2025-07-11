@@ -47,12 +47,13 @@ public class AuthController {
         );
 
         User user = (User) authentication.getPrincipal();
-        String token = jwtUtil.generateToken(user.getUsername());
+        String token = jwtUtil.generateToken(user.getId().toString(),user.getUsername(),user.getRole().name());
 
         JwtResponseDTO response = JwtResponseDTO.builder()
                 .token(token)
                 .tokenType("Bearer")
                 .username(user.getUsername())
+                .id(user.getId().toString())
                 .role(user.getRole())
                 .build();
 
