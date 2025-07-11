@@ -38,14 +38,15 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
             log.info("OAuth2 login success for: {} with role: {}", user.getUsername(), user.getRole());
 
-            String token = jwtUtil.generateToken(user.getUsername());
+            String token = jwtUtil.generateToken(user.getId().toString(), user.getUsername(), user.getRole().name());
 
-            JwtResponseDTO jwtResponse = JwtResponseDTO.builder()
-                    .token(token)
-                    .tokenType("Bearer")
-                    .username(user.getUsername())
-                    .role(user.getRole())
-                    .build();
+        JwtResponseDTO jwtResponse = JwtResponseDTO.builder()
+                .token(token)
+                .tokenType("Bearer")
+                .username(user.getUsername())
+                .id(user.getId().toString())
+                .role(user.getRole())
+                .build();
 
             ApiResponseDTO<JwtResponseDTO> responseDTO = ApiResponseDTO.success("OAuth2 login successful", jwtResponse);
 
