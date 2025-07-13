@@ -30,7 +30,8 @@ public class SecurityConfig {
                                 "/restaurant/swagger-ui/**",
                                 "/restaurant/v3/api-docs/**",
                                 "/restaurant/swagger-ui.html",
-                                "/actuator/health"
+                                "/actuator/**",
+                                "/api/restaurants/internal/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

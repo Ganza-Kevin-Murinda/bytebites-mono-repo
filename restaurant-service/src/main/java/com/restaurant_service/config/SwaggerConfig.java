@@ -15,10 +15,14 @@ import java.util.List;
 public class SwaggerConfig {
 
     @Bean
-    public OpenAPI byteBitesOpenAPI() {
+    public OpenAPI restaurantServiceOpenAPI() {
+        io.swagger.v3.oas.models.servers.Server gatewayServer = new io.swagger.v3.oas.models.servers.Server();
+        gatewayServer.setUrl("http://localhost:8080/restaurant");
+        gatewayServer.setDescription("Restaurant Service via API Gateway");
+
         io.swagger.v3.oas.models.servers.Server devServer = new io.swagger.v3.oas.models.servers.Server();
-        devServer.setUrl("http://localhost:8080");
-        devServer.setDescription("Local server");
+        devServer.setUrl("http://localhost:8083");
+        devServer.setDescription("Direct Restaurant Service");
 
         SecurityScheme jwtScheme = new SecurityScheme()
                 .type(SecurityScheme.Type.HTTP)
@@ -38,7 +42,7 @@ public class SwaggerConfig {
 
         return new OpenAPI()
                 .info(info)
-                .servers(List.of(devServer))
+                .servers(List.of(gatewayServer, devServer))
                 .components(new Components()
                         .addSecuritySchemes("bearerAuth", jwtScheme)
                 )
