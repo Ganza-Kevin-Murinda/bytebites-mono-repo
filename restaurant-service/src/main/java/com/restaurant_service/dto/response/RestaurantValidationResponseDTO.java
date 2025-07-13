@@ -6,12 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class MenuResponseDTO {
-    Long id;
-    String name;
-    double price;
-    RestaurantSummaryDTO restaurantSummaryDto;
+public class RestaurantValidationResponseDTO {
+    private Long id;
+    private String name;
+    private String type;
+    private String location;
+    private boolean active;
 }

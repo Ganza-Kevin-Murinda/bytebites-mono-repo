@@ -1,6 +1,6 @@
-package com.restaurant_service.config;
+package com.order_service.config;
 
-import com.restaurant_service.filter.UserContextFilter;
+import com.order_service.filter.UserContextFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -26,12 +26,10 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/restaurants/public/**",
-                                "/restaurant/swagger-ui/**",
-                                "/restaurant/v3/api-docs/**",
-                                "/restaurant/swagger-ui.html",
-                                "/actuator/**",
-                                "/api/restaurants/internal/**"
+                                "/order/swagger-ui/**",
+                                "/order/v3/api-docs/**",
+                                "/order/swagger-ui.html",
+                                "/actuator/health"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

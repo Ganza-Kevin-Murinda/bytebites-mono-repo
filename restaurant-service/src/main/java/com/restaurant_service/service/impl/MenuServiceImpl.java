@@ -2,6 +2,7 @@ package com.restaurant_service.service.impl;
 
 import com.restaurant_service.dto.request.MenuRequestDTO;
 import com.restaurant_service.dto.response.MenuResponseDTO;
+import com.restaurant_service.dto.response.MenuValidationResponseDTO;
 import com.restaurant_service.exception.MenuExistsException;
 import com.restaurant_service.exception.MenuNotFoundException;
 import com.restaurant_service.exception.RestaurantNotFoundException;
@@ -17,7 +18,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -55,19 +59,8 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public Optional<Menu> getMenuByName(String name) {
-        return menuRepository.findByName(name);
-    }
-
-    @Override
     public Optional<Menu> getMenuById(Long id) {
         return menuRepository.findById(id);
-    }
-
-    @Override
-    public Page<MenuResponseDTO> getAllMenus(Pageable pageable) {
-        return menuRepository.findAll(pageable)
-                .map(menuMapper::toResponseDTO);
     }
 
     @Override
@@ -103,4 +96,23 @@ public class MenuServiceImpl implements MenuService {
         }
         menuRepository.deleteById(id);
     }
+
+    @Override
+    public List<MenuValidationResponseDTO> validateMenuItems(Long restaurantId, List<Long> menuItemIds) {
+
+        // Find all menu items that belong to the restaurant and match the provided IDs
+        List<Menu> menuItems = menuRepository.findByRestaurantIdAndIdIn(restaurantId, menuItemIds);
+
+        // Convert to validation DTOs
+        return menuItems.stream()
+                .map(menu -> MenuValidationResponseDTO.builder()
+                        .id(menu.getId())
+                        .name(menu.getName())
+                        .price(BigDecimal.valueOf(menu.getPrice()))
+                        .available(true) // You can add availability logic here
+                        .restaurantId(restaurantId)
+                        .build())
+                .collect(Collectors.toList());
+    }
+
 }

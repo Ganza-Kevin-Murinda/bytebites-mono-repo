@@ -1,4 +1,4 @@
-package com.restaurant_service.config;
+package com.order_service.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -15,14 +15,14 @@ import java.util.List;
 public class SwaggerConfig {
 
     @Bean
-    public OpenAPI restaurantServiceOpenAPI() {
+    public OpenAPI borderServiceOpenAPI() {
         io.swagger.v3.oas.models.servers.Server gatewayServer = new io.swagger.v3.oas.models.servers.Server();
-        gatewayServer.setUrl("http://localhost:8080/restaurant");
-        gatewayServer.setDescription("Restaurant Service via API Gateway");
+        gatewayServer.setUrl("http://localhost:8080/order");
+        gatewayServer.setDescription("Order Service via API Gateway");
 
         io.swagger.v3.oas.models.servers.Server devServer = new io.swagger.v3.oas.models.servers.Server();
-        devServer.setUrl("http://localhost:8083");
-        devServer.setDescription("Direct Restaurant Service");
+        devServer.setUrl("http://localhost:8082");
+        devServer.setDescription("Direct Order Service");
 
         SecurityScheme jwtScheme = new SecurityScheme()
                 .type(SecurityScheme.Type.HTTP)
@@ -35,14 +35,14 @@ public class SwaggerConfig {
         contact.setUrl("https://api.bytebites.com");
 
         Info info = new Info()
-                .title("ByteBites Restaurant Service API")
+                .title("ByteBites Order Service API")
                 .version("1.0")
                 .contact(contact)
-                .description("Restaurant and Menu Management Service for ByteBites Platform");
+                .description("Order Food Management Service for ByteBites Platform");
 
         return new OpenAPI()
                 .info(info)
-                .servers(List.of(gatewayServer, devServer))
+                .servers(List.of(gatewayServer,devServer))
                 .components(new Components()
                         .addSecuritySchemes("bearerAuth", jwtScheme)
                 )
