@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class MenuResponseDTO {
+    Long id;
     String name;
     double price;
     RestaurantSummaryDTO restaurantSummaryDto;
