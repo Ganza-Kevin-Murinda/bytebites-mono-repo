@@ -1,10 +1,9 @@
 package com.restaurant_service.controller;
 
 import com.restaurant_service.dto.request.MenuRequestDTO;
+import com.restaurant_service.dto.request.MenuValidationRequestDTO;
 import com.restaurant_service.dto.request.RestaurantRequestDTO;
-import com.restaurant_service.dto.response.ApiResponseDTO;
-import com.restaurant_service.dto.response.MenuResponseDTO;
-import com.restaurant_service.dto.response.RestaurantResponseDTO;
+import com.restaurant_service.dto.response.*;
 import com.restaurant_service.exception.RestaurantNotFoundException;
 import com.restaurant_service.exception.UnauthorizedException;
 import com.restaurant_service.mapper.RestaurantMapper;
@@ -27,6 +26,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/restaurants")
@@ -85,6 +86,54 @@ public class RestaurantController {
 
         Page<MenuResponseDTO> menus = menuService.getRestaurantMenus(restaurantId, pageable);
         return ResponseEntity.ok(ApiResponseDTO.success("Menus retrieved successfully", menus));
+    }
+
+    @GetMapping("/internal/validate/{id}")
+    @Operation(summary = "Validate restaurant for internal services", description = "Internal endpoint for service-to-service validation")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Restaurant validation successful"),
+            @ApiResponse(responseCode = "404", description = "Restaurant not found")
+    })
+    public ResponseEntity<ApiResponseDTO<RestaurantValidationResponseDTO>> validateRestaurant(
+            @Parameter(description = "Restaurant ID") @PathVariable Long id) {
+
+        log.info("Internal validation request for restaurant ID: {}", id);
+
+        Restaurant restaurant = restaurantService.getRestaurantById(id)
+                .orElseThrow(() -> new RestaurantNotFoundException("Restaurant not found with id: " + id));
+
+        RestaurantValidationResponseDTO validationResponse = RestaurantValidationResponseDTO.builder()
+                .id(restaurant.getId())
+                .name(restaurant.getName())
+                .type(restaurant.getType())
+                .location(restaurant.getLocation())
+                .active(true)
+                .build();
+
+        return ResponseEntity.ok(ApiResponseDTO.success("Restaurant validation successful", validationResponse));
+    }
+
+    @PostMapping("/internal/{restaurantId}/menus/validate")
+    @Operation(summary = "Validate menu items for internal services", description = "Internal endpoint for menu items validation")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Menu items validation successful"),
+            @ApiResponse(responseCode = "404", description = "Restaurant or menu items not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
+    public ResponseEntity<ApiResponseDTO<List<MenuValidationResponseDTO>>> validateMenuItems(
+            @Parameter(description = "Restaurant ID") @PathVariable Long restaurantId,
+            @Valid @RequestBody MenuValidationRequestDTO request) {
+
+        log.info("Internal menu validation request for restaurant: {} with items: {}", restaurantId, request.getMenuItemIds());
+
+        // Verify restaurant exists
+        Restaurant restaurant = restaurantService.getRestaurantById(restaurantId)
+                .orElseThrow(() -> new RestaurantNotFoundException("Restaurant not found with id: " + restaurantId));
+
+        // Validate menu items
+        List<MenuValidationResponseDTO> validatedMenuItems = menuService.validateMenuItems(restaurantId, request.getMenuItemIds());
+
+        return ResponseEntity.ok(ApiResponseDTO.success("Menu items validation successful", validatedMenuItems));
     }
 
     // ==================== PROTECTED ENDPOINTS ====================
